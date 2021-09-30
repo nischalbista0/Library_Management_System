@@ -36,7 +36,9 @@ def login_window():
     login_label.place(x=850, y=180)
 
     # Creating and placing button
-    login_button = Button(root, text="Log In ", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=open_dashboard)
+    login_button = Button(root, text="Log In ", border=0, bg="#364954", fg="white", activebackground="#364954",
+                          activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                          command=open_dashboard)
     login_button.place(x=885, y=410)
 
     # Creating and placing entries
@@ -96,31 +98,37 @@ def open_dashboard():
 
         # Buttons
         admin_button = ImageTk.PhotoImage(resized_image2)
-        admin_button_image = Button(window, image=admin_button, border=0, bg="white", activebackground="white", cursor="hand2", command=librarians_window)
+        admin_button_image = Button(window, image=admin_button, border=0, bg="white", activebackground="white",
+                                    cursor="hand2", command=librarians_window)
         admin_button_image.place(x=545, y=175)
         Label(window, text="Librarians", bg="white", font=("Poppins", 16)).place(x=542, y=265)
 
         std_button = ImageTk.PhotoImage(resized_image3)
-        std_button_image = Button(window, image=std_button, border=0, bg="white", activebackground="white", cursor="hand2", command=students_window)
+        std_button_image = Button(window, image=std_button, border=0, bg="white", activebackground="white",
+                                  cursor="hand2", command=students_window)
         std_button_image.place(x=860, y=185)
         Label(window, text="Students", bg="white", font=("Poppins", 16)).place(x=865, y=265)
 
         issue_button = ImageTk.PhotoImage(resized_image4)
-        issue_button_image = Button(window, image=issue_button, border=0, bg="white", activebackground="white", cursor="hand2")
+        issue_button_image = Button(window, image=issue_button, border=0, bg="white", activebackground="white",
+                                    cursor="hand2")
         issue_button_image.place(x=375, y=420)
         Label(window, text="Issue Book", bg="white", font=("Poppins", 16)).place(x=375, y=505)
 
         books_button = ImageTk.PhotoImage(resized_image5)
-        books_button_image = Button(window, image=books_button, border=0, bg="white", activebackground="white", cursor="hand2", command=books_window)
+        books_button_image = Button(window, image=books_button, border=0, bg="white", activebackground="white",
+                                    cursor="hand2", command=books_window)
         books_button_image.place(x=215, y=170)
         Label(window, text="Books", bg="white", font=("Poppins", 16)).place(x=235, y=265)
 
         return_button = ImageTk.PhotoImage(resized_image6)
-        return_button_image = Button(window, image=return_button, border=0, bg="white", activebackground="white", cursor="hand2")
+        return_button_image = Button(window, image=return_button, border=0, bg="white", activebackground="white",
+                                     cursor="hand2")
         return_button_image.place(x=710, y=420)
         Label(window, text="Return Book", bg="white", font=("Poppins", 16)).place(x=694, y=502)
 
-        logout_button = Button(window, text="Log Out", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=logout)
+        logout_button = Button(window, text="Log Out", border=0, bg="#364954", fg="white", activebackground="#364954",
+                               activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=logout)
         logout_button.place(x=1020, y=580)
 
         # Label
@@ -183,7 +191,9 @@ def books_window():
         bg_image.place(x=0, y=0)
 
         def add_book():
-            if book_name.get() != '' and category.get() != '' and author_name.get() != '' and language.get() != '' and publication.get() != '' and quantity.get() != '':
+            if book_name.get() != '' and category.get() != '' and author_name.get() != '' and language.get() != '' and\
+                    publication.get() != '' and quantity.get() != '':
+
                 conn = sqlite3.connect("books_database.db")
 
                 # Create cursor
@@ -211,14 +221,9 @@ def books_window():
                 for record in records:
                     Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
                     Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
-                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(
-                        row=roww,
-                        column=2)
-                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(
-                        row=roww,
-                        column=3)
-                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
-                        row=roww, column=4)
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
 
                     roww += 1
 
@@ -284,8 +289,162 @@ def books_window():
 
         mainloop()
 
-    def update_book():
-        pass
+    def update_book_window():
+        if book_id.get() != '':
+            update_window = Toplevel()
+            update_window.title("Update Book")
+            update_window.geometry("1191x670+60+30")
+            update_window.resizable(0, 0)
+
+            # Read the Image
+            image = Image.open("images/add_and_update.png")
+
+            # Resize the image using resize() method
+            resize_image = image.resize((1191, 670))
+
+            # Displaying background image
+            bg = ImageTk.PhotoImage(resize_image)
+            bg_image = Label(update_window, image=bg)
+            bg_image.place(x=0, y=0)
+
+            def update_book():
+                # Create a databases or connect to one
+                conn = sqlite3.connect("books_database.db")
+
+                # Create cursor
+                c = conn.cursor()
+                record_id = book_id.get()
+
+                c.execute(""" UPDATE book_details SET
+                                    Books_Name = :books_name,
+                                    Category = :category,
+                                    Author_Name = :author_name,
+                                    Language = :language,
+                                    Publication = :publication,
+                                    Quantity = :quantity
+                                    WHERE oid = :oid""",
+                          {'books_name': book_name.get(),
+                           'category': category.get(),
+                           'author_name': author_name.get(),
+                           'language': language.get(),
+                           'publication': publication.get(),
+                           'quantity': quantity.get(),
+                           'oid': record_id
+
+                           }
+                          )
+
+                update_window.destroy()
+
+                # query of the database
+                c.execute("SELECT *, oid FROM book_details")
+
+                records = c.fetchall()
+
+                # Loop through the results
+                roww = 1
+                for record in records:
+                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
+                        row=roww, column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(
+                        row=roww, column=1)
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(
+                        row=roww, column=2)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(
+                        row=roww, column=3)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
+                        row=roww, column=4)
+                    roww += 1
+
+                conn.commit()
+                conn.close()
+
+            def clear_update_window():
+                entries = [book_name, category, author_name, language, publication, quantity]
+                for entry in entries:
+                    entry.delete(0, END)
+
+            # Create a databases or connect to one
+            conn = sqlite3.connect("books_database.db")
+
+            # Create cursor
+            c = conn.cursor()
+
+            # Creating and placing labels
+            label1 = Label(update_window, text="Book Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label1.place(x=175, y=150)
+
+            label2 = Label(update_window, text="Category", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label2.place(x=630, y=150)
+
+            label3 = Label(update_window, text="Author Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label3.place(x=178, y=250)
+
+            label4 = Label(update_window, text="Language", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label4.place(x=630, y=250)
+
+            label5 = Label(update_window, text="Publication", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label5.place(x=175, y=353)
+
+            label6 = Label(update_window, text="Quantity", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label6.place(x=630, y=353)
+
+            # Creating and placing entries
+            book_name = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            book_name.place(x=180, y=185)
+            book_name.focus()
+
+            category = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            category.place(x=635, y=185)
+
+            author_name = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            author_name.place(x=180, y=285)
+
+            language = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            language.place(x=635, y=285)
+
+            publication = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            publication.place(x=180, y=388)
+
+            quantity = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            quantity.place(x=635, y=388)
+
+            # Creating and placing buttons
+            update_button = Button(update_window, text="Update", border=0, bg="#364954", fg="white", activebackground="#364954",
+                                activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                                command=update_book)
+            update_button.place(x=467, y=506)
+
+            clear_button = Button(update_window, text="Clear", border=0, bg="#364954", fg="white", activebackground="#364954",
+                                  activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                                  command=clear_update_window)
+            clear_button.place(x=655, y=506)
+
+            id = book_id.get()
+
+            c.execute("SELECT * FROM book_details WHERE oid=" + id)
+            records = c.fetchall()
+
+            # loop through the results
+            for record in records:
+                book_name.insert(0, record[0])
+                category.insert(0, record[1])
+                author_name.insert(0, record[2])
+                language.insert(0, record[3])
+                publication.insert(0, record[4])
+                quantity.insert(0, record[5])
+
+            conn.commit()
+            conn.close()
+
+            mainloop()
+
 
     def remove_book():
         if book_id.get() != '':
@@ -309,7 +468,7 @@ def books_window():
                 Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
                 Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
                 Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
-                Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
+                Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
                 Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
 
                 roww += 1
@@ -341,7 +500,7 @@ def books_window():
 
     update_button = Button(books_window, text="Update Book", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                           cursor="hand2", command=update_book)
+                           cursor="hand2", command=update_book_window)
     update_button.place(x=150, y=370)
 
     remove_button = Button(books_window, text="Remove Book", border=0, bg="#364954", fg="white",
@@ -383,12 +542,9 @@ def books_window():
     myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
 
     Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=0)
-    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=22).grid(row=0,
-                                                                                                              column=1)
-    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=14).grid(row=0,
-                                                                                                                column=2)
-    Label(myFrame, text="Language", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=0,
-                                                                                                             column=3)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=22).grid(row=0, column=1)
+    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=14).grid(row=0, column=2)
+    Label(myFrame, text="Language", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=0, column=3)
     Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=4)
 
     c.execute("SELECT *,oid FROM book_details")
@@ -399,12 +555,9 @@ def books_window():
 
     for record in records:
         Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
-        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww,
-                                                                                                        column=1)
-        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww,
-                                                                                                        column=2)
-        Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww,
-                                                                                                        column=3)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
+        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
+        Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
         Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
 
         roww += 1
@@ -522,7 +675,8 @@ def students_window():
     remove_button.place(x=139, y=442)
 
     exit_button = Button(students_window, text="Exit", border=0, bg="#364954", fg="white", activebackground="#364954",
-                         activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=students_window.destroy)
+                         activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2",
+                         command=students_window.destroy)
     exit_button.place(x=198, y=525)
 
     students_window_logout = Button(students_window, text="Log Out", border=0, bg="#364954", fg="white",
