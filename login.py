@@ -173,6 +173,71 @@ def books_window():
             password.delete(0, END)
             username.focus()
 
+    def search():
+        for widgets in myFrame.winfo_children():
+            widgets.destroy()
+
+        Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 13, "bold")).grid(row=1, column=0)
+        Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=20).grid(row=1,
+                                                                                                                  column=1)
+        Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=13).grid(
+            row=1,
+            column=2)
+        Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=1,
+                                                                                                                 column=3)
+        Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=1,
+                                                                                                            column=4)
+        Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(
+            row=1, column=5)
+
+        if book_id.get() != '':
+            conn = sqlite3.connect('books_database.db')
+
+            c = conn.cursor()
+
+            c.execute("SELECT *, oid FROM book_details")
+
+            records = c.fetchall()
+
+            roww = 2
+            num = 1
+            for record in records:
+                if record[6] == int(book_id.get()):
+                    Label(myFrame, text=num, bg="cyan", font=("MS Reference Sans Serif", 10), width=5).grid(row=0,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="cyan", font=("MS Reference Sans Serif", 10), width=30).grid(
+                        row=0, column=1)
+                    Label(myFrame, text=record[4], bg="cyan", font=("MS Reference Sans Serif", 10), width=20).grid(
+                        row=0, column=2)
+                    Label(myFrame, text=record[1], bg="cyan", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=0, column=3)
+                    Label(myFrame, text=record[5], bg="cyan", font=("MS Reference Sans Serif", 10), width=6).grid(
+                        row=0, column=4)
+                    Label(myFrame, text=record[6], bg="cyan", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(
+                        row=0, column=5)
+
+                if record[6] > 0:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(
+                        row=roww, column=1)
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(
+                        row=roww, column=2)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww, column=3)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(
+                        row=roww, column=4)
+                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(
+                        row=roww, column=5)
+
+                    roww += 1
+                    num += 1
+
+                myFrame.config(bg="white")
+
+            conn.commit()
+            conn.close()
+
     def add_book_window():
         add = Toplevel()
         add.title("Add Book")
@@ -218,14 +283,23 @@ def books_window():
                 records = c.fetchall()
 
                 roww = 1
+                num = 1
                 for record in records:
-                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
-                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
-                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
-                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
-                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(
+                        row=roww, column=1)
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(
+                        row=roww, column=2)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww, column=3)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(
+                        row=roww, column=4)
+                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(
+                        row=roww, column=5)
 
                     roww += 1
+                    num += 1
 
                 conn.commit()
                 conn.close()
@@ -343,18 +417,23 @@ def books_window():
 
                 # Loop through the results
                 roww = 1
+                num = 1
                 for record in records:
-                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
-                        row=roww, column=0)
-                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(
                         row=roww, column=1)
-                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(
                         row=roww, column=2)
-                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
                         row=roww, column=3)
-                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(
                         row=roww, column=4)
+                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(
+                        row=roww, column=5)
+
                     roww += 1
+                    num += 1
 
                 conn.commit()
                 conn.close()
@@ -464,20 +543,30 @@ def books_window():
 
             # Loop through the results
             roww = 1
+            num = 1
             for record in records:
-                Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
-                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
-                Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
-                Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
-                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+                Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                         column=0)
+                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(
+                    row=roww, column=1)
+                Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=18).grid(
+                    row=roww, column=2)
+                Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                    row=roww, column=3)
+                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(row=roww,
+                                                                                                               column=4)
+                Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(row=roww,
+                                                                                                               column=5)
 
                 roww += 1
+                num += 1
 
-            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
-            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
-            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
-            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
-            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(row=roww, column=1)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(row=roww, column=2)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww, column=3)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(row=roww, column=4)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(row=roww, column=5)
 
             book_id.delete(0, END)
 
@@ -490,7 +579,7 @@ def books_window():
     # Buttons
     search_button = Button(books_window, text="Search", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=search)
     search_button.place(x=295, y=169)
 
     add_button = Button(books_window, text="Add Book", border=0, bg="#364954", fg="white",
@@ -541,26 +630,33 @@ def books_window():
     myCanvas.config(yscrollcommand=scrollbar.set)
     myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
 
-    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=0)
-    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=22).grid(row=0, column=1)
-    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=14).grid(row=0, column=2)
-    Label(myFrame, text="Language", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=0, column=3)
+    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 13, "bold")).grid(row=0, column=0)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=20).grid(row=0,
+                                                                                                              column=1)
+    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=13).grid(row=0,
+                                                                                                                column=2)
+    Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=0,
+                                                                                                             column=3)
     Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=4)
+    Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=5)
 
     c.execute("SELECT *,oid FROM book_details")
 
     records = c.fetchall()
 
     roww = 1
+    num = 1
 
     for record in records:
-        Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
-        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
-        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
-        Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
-        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+        Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=30).grid(row=roww, column=1)
+        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(row=roww, column=2)
+        Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww, column=3)
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=6).grid(row=roww, column=4)
+        Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=6).grid(row=roww, column=5)
 
         roww += 1
+        num += 1
 
     conn.commit()
     conn.close()
