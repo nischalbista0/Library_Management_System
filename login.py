@@ -287,6 +287,47 @@ def books_window():
     def update_book():
         pass
 
+    def remove_book():
+        if book_id.get() != '':
+            # create database
+            conn = sqlite3.connect("books_database.db")
+
+            # create cursor
+            c = conn.cursor()
+
+            # delete a record
+            c.execute("DELETE from book_details WHERE oid = " + book_id.get())
+
+            # query of the database
+            c.execute("SELECT *, oid FROM book_details")
+
+            records = c.fetchall()
+
+            # Loop through the results
+            roww = 1
+            for record in records:
+                Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
+                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
+                Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
+                Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
+                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+
+                roww += 1
+
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww, column=2)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww, column=3)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+
+            book_id.delete(0, END)
+
+            conn.commit()
+            conn.close()
+
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid book ID to continue.", parent=books_window)
+
     # Buttons
     search_button = Button(books_window, text="Search", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
@@ -305,7 +346,7 @@ def books_window():
 
     remove_button = Button(books_window, text="Remove Book", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=remove_book)
     remove_button.place(x=150, y=440)
 
     exit_button = Button(books_window, text="Exit", border=0, bg="#364954", fg="white",
@@ -367,7 +408,6 @@ def books_window():
         Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
 
         roww += 1
-
 
     conn.commit()
     conn.close()
