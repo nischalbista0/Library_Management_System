@@ -2,26 +2,57 @@ from tkinter import *
 import sqlite3
 from PIL import ImageTk, Image
 from tkinter import messagebox
+from tkinter import ttk
 
-root = Tk()
-root.geometry("1191x670+60+30")
-root.resizable(0, 0)
-root.title("Library Management System")
+admin_credentials = {'username': 'admin', 'password': 'admin'}
 
-# Read the Image
-image = Image.open("images/login_window.png")
 
-# Resize the image using resize() method
-resize_image = image.resize((1191, 670))
+def login_window():
+    global username
+    global password
+    global root
 
-# Displaying background image
-bg = ImageTk.PhotoImage(resize_image)
-bg_image = Label(root, image=bg)
-bg_image.place(x=0, y=0)
+    root = Tk()
+    root.geometry("1191x670+60+30")
+    root.resizable(0, 0)
+    root.title("Library Management System")
 
-admin_credentials = {'username':'admin', 'password':'admin'}
+    # Read the Image
+    image = Image.open("images/login_window.png")
 
-def login():
+    # Resize the image using resize() method
+    resize_image = image.resize((1191, 670))
+
+    # Displaying background image
+    bg = ImageTk.PhotoImage(resize_image)
+    bg_image = Label(root, image=bg)
+    bg_image.place(x=0, y=0)
+
+    # Creating and placing labels
+    welcome_label = Label(root, text="Welcome!", bg="#a7b3bb", fg="#232E34", font=("Poppins", 24, "bold"))
+    welcome_label.place(x=860, y=140)
+
+    login_label = Label(root, text="Sign in to continue", bg="#a7b3bb", fg="#232E34", font=("Poppins", 16))
+    login_label.place(x=850, y=180)
+
+    # Creating and placing button
+    login_button = Button(root, text="Log In ", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=open_dashboard)
+    login_button.place(x=885, y=410)
+
+    # Creating and placing entries
+    username = Entry(root, width=25, border=0, font=("Poppins", 15))
+    username.place(x=795, y=240)
+    username.focus()
+
+    password = Entry(root, width=25, border=0, font=("Poppins", 16), show="*")
+    password.place(x=795, y=330)
+
+    mainloop()
+
+
+def open_dashboard():
+    global window
+
     if username.get() == '' or password.get() == '':
         messagebox.showinfo("Incomplete Information", "Please enter both username and password to continue!")
 
@@ -29,15 +60,18 @@ def login():
         messagebox.showinfo("Incorrect Information", "Please enter correct credentials!")
 
     elif username.get() == admin_credentials['username'] and password.get() == admin_credentials['password']:
-        root.destroy()
-        window = Tk()
+        window = Toplevel(root)
         window.geometry("1191x670+60+30")
         window.resizable(0, 0)
         window.title("Dashboard")
 
-        # Functions
-        def books():
-            pass
+        def logout():
+            ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=window)
+            if ans:
+                window.destroy()
+                username.delete(0, END)
+                password.delete(0, END)
+                username.focus()
 
         # Read the Image
         img1 = Image.open("images/dashboard.png")
@@ -62,12 +96,12 @@ def login():
 
         # Buttons
         admin_button = ImageTk.PhotoImage(resized_image2)
-        admin_button_image = Button(window, image=admin_button, border=0, bg="white", activebackground="white", cursor="hand2")
+        admin_button_image = Button(window, image=admin_button, border=0, bg="white", activebackground="white", cursor="hand2", command=librarians_window)
         admin_button_image.place(x=545, y=175)
         Label(window, text="Librarians", bg="white", font=("Poppins", 16)).place(x=542, y=265)
 
         std_button = ImageTk.PhotoImage(resized_image3)
-        std_button_image = Button(window, image=std_button, border=0, bg="white", activebackground="white", cursor="hand2")
+        std_button_image = Button(window, image=std_button, border=0, bg="white", activebackground="white", cursor="hand2", command=students_window)
         std_button_image.place(x=860, y=185)
         Label(window, text="Students", bg="white", font=("Poppins", 16)).place(x=865, y=265)
 
@@ -77,7 +111,7 @@ def login():
         Label(window, text="Issue Book", bg="white", font=("Poppins", 16)).place(x=375, y=505)
 
         books_button = ImageTk.PhotoImage(resized_image5)
-        books_button_image = Button(window, image=books_button, border=0, bg="white", activebackground="white", cursor="hand2", command=books)
+        books_button_image = Button(window, image=books_button, border=0, bg="white", activebackground="white", cursor="hand2", command=books_window)
         books_button_image.place(x=215, y=170)
         Label(window, text="Books", bg="white", font=("Poppins", 16)).place(x=235, y=265)
 
@@ -86,7 +120,7 @@ def login():
         return_button_image.place(x=710, y=420)
         Label(window, text="Return Book", bg="white", font=("Poppins", 16)).place(x=694, y=502)
 
-        logout_button = Button(window, text="Log Out", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2")
+        logout_button = Button(window, text="Log Out", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=logout)
         logout_button.place(x=1020, y=580)
 
         # Label
@@ -96,23 +130,375 @@ def login():
         mainloop()
 
 
-# Creating and placing labels
-welcome_label = Label(root, text="Welcome!", bg="#a7b3bb", fg="#232E34", font=("Poppins", 24, "bold"))
-welcome_label.place(x=860, y=140)
+def books_window():
+    books_window = Toplevel(window)
+    books_window.geometry("1191x670+60+30")
+    books_window.resizable(0, 0)
+    books_window.title("Books")
 
-login_label = Label(root, text="Sign in to continue", bg="#a7b3bb", fg="#232E34", font=("Poppins", 16))
-login_label.place(x=850, y=180)
+    # Background image of books window
+    img = Image.open("images/management_window.png")
+    resized_image = img.resize((1240, 670))
+    books_bg = ImageTk.PhotoImage(resized_image)
+    books_bg_image = Label(books_window, image=books_bg)
+    books_bg_image.place(x=0, y=0)
 
-# Creating and placing button
-login_button = Button(root, text="Log In ", border=0, bg="#364954", fg="white", activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=login)
-login_button.place(x=885, y=410)
+    conn = sqlite3.connect('books_database.db')
 
-# Creating and placing entries
-username = Entry(root, width=25, border=0, font=("Poppins", 15))
-username.place(x=795, y=240)
-username.focus()
+    c = conn.cursor()
 
-password = Entry(root, width=25, border=0, font=("Poppins", 16), show="*")
-password.place(x=795, y=330)
+    # c.execute('''CREATE TABLE book_details(
+    # Books_Name text,
+    # Category text,
+    # Author_Name text,
+    # Language integer,
+    # Publication text,
+    # Quantity integer
+    # )''')
 
-mainloop()
+    def books_window_logout():
+        ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=books_window)
+        if ans:
+            window.destroy()
+            books_window.destroy()
+            username.delete(0, END)
+            password.delete(0, END)
+            username.focus()
+
+    def add_book_window():
+        add = Toplevel()
+        add.title("Add Book")
+        add.geometry("1191x670+60+30")
+        add.resizable(0, 0)
+
+        # Read the Image
+        image = Image.open("images/add_and_update.png")
+
+        # Resize the image using resize() method
+        resize_image = image.resize((1191, 670))
+
+        # Displaying background image
+        bg = ImageTk.PhotoImage(resize_image)
+        bg_image = Label(add, image=bg)
+        bg_image.place(x=0, y=0)
+
+        def add_book():
+            if book_name.get() != '' and category.get() != '' and author_name.get() != '' and language.get() != '' and publication.get() != '' and quantity.get() != '':
+                conn = sqlite3.connect("books_database.db")
+
+                # Create cursor
+                c = conn.cursor()
+
+                # Insert into table
+                c.execute(
+                    "INSERT INTO book_details VALUES (:Book_Name, :Category, :Author_Name, :Language, :Publication, :Quantity)",
+                    {
+                        'Book_Name': book_name.get(),
+                        'Category': category.get(),
+                        'Author_Name': author_name.get(),
+                        'Language': language.get(),
+                        'Publication': publication.get(),
+                        'Quantity': quantity.get(),
+                    })
+
+                # query of the database
+                c.execute("SELECT *, oid FROM book_details")
+
+                # print(records)
+                records = c.fetchall()
+
+                roww = 1
+                for record in records:
+                    Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww, column=1)
+                    Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(
+                        row=roww, column=4)
+
+                    roww += 1
+
+                conn.commit()
+                conn.close()
+                add.destroy()
+
+        def clear_add_window():
+            entries = [book_name, category, author_name, language, publication, quantity]
+            for entry in entries:
+                entry.delete(0, END)
+
+        # Creating and placing labels
+        label1 = Label(add, text="Book Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label1.place(x=175, y=150)
+
+        label2 = Label(add, text="Category", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label2.place(x=630, y=150)
+
+        label3 = Label(add, text="Author Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label3.place(x=178, y=250)
+
+        label4 = Label(add, text="Language", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label4.place(x=630, y=250)
+
+        label5 = Label(add, text="Publication", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label5.place(x=175, y=353)
+
+        label6 = Label(add, text="Quantity", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label6.place(x=630, y=353)
+
+        # Creating and placing entries
+        book_name = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        book_name.place(x=180, y=185)
+        book_name.focus()
+
+        category = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        category.place(x=635, y=185)
+
+        author_name = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        author_name.place(x=180, y=285)
+
+        language = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        language.place(x=635, y=285)
+
+        publication = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        publication.place(x=180, y=388)
+
+        quantity = Entry(add, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        quantity.place(x=635, y=388)
+
+        # Creating and placing buttons
+        add_button = Button(add, text="Add", border=0, bg="#364954", fg="white", activebackground="#364954",
+                            activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=add_book)
+        add_button.place(x=477, y=506)
+
+        clear_button = Button(add, text="Clear", border=0, bg="#364954", fg="white", activebackground="#364954",
+                              activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                              command=clear_add_window)
+        clear_button.place(x=655, y=506)
+
+        mainloop()
+
+    def update_book():
+        pass
+
+    # Buttons
+    search_button = Button(books_window, text="Search", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                           cursor="hand2")
+    search_button.place(x=295, y=169)
+
+    add_button = Button(books_window, text="Add Book", border=0, bg="#364954", fg="white",
+                        activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                        cursor="hand2", command=add_book_window)
+    add_button.place(x=165, y=297)
+
+    update_button = Button(books_window, text="Update Book", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                           cursor="hand2", command=update_book)
+    update_button.place(x=150, y=370)
+
+    remove_button = Button(books_window, text="Remove Book", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                           cursor="hand2")
+    remove_button.place(x=150, y=440)
+
+    exit_button = Button(books_window, text="Exit", border=0, bg="#364954", fg="white",
+                         activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                         cursor="hand2", command=books_window.destroy)
+    exit_button.place(x=198, y=525)
+
+    books_window_logout = Button(books_window, text="Log Out", border=0, bg="#364954", fg="white",
+                                 activebackground="#364954", activeforeground="#84B1CB",
+                                 font=("Poppins", 14, "bold"), cursor="hand2", command=books_window_logout)
+    books_window_logout.place(x=1013, y=597)
+
+    # Entry
+    book_id = Entry(books_window, width=18, border=0, bg="#a7b3bb", font=("Poppins", 15))
+    book_id.place(x=67, y=178)
+    book_id.focus()
+
+    # Label
+    Label(books_window, text="Menu", bg="#a7b3bb", font=("Times New Roman", 19)).place(x=77, y=85)
+
+    # Create Frame with scrollbar
+    cover = LabelFrame(books_window, height=800, width=1000, bd=0)
+    cover.place(x=416, y=105)
+
+    myCanvas = Canvas(cover, height=472, width=676, bg="white")
+    myCanvas.pack(side=LEFT, fill='y', expand='yes')
+
+    myFrame = Frame(myCanvas)
+    myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
+
+    scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
+    scrollbar.pack(side=RIGHT, fill='y')
+    myCanvas.config(yscrollcommand=scrollbar.set)
+    myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
+
+    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=0)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=22).grid(row=0,
+                                                                                                              column=1)
+    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=14).grid(row=0,
+                                                                                                                column=2)
+    Label(myFrame, text="Language", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=10).grid(row=0,
+                                                                                                             column=3)
+    Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 13, "bold"), width=4).grid(row=0, column=4)
+
+    c.execute("SELECT *,oid FROM book_details")
+
+    records = c.fetchall()
+
+    roww = 1
+
+    for record in records:
+        Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=0)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 12), width=27).grid(row=roww,
+                                                                                                        column=1)
+        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 12), width=17).grid(row=roww,
+                                                                                                        column=2)
+        Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 12), width=12).grid(row=roww,
+                                                                                                        column=3)
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 12), width=5).grid(row=roww, column=4)
+
+        roww += 1
+
+
+    conn.commit()
+    conn.close()
+
+    mainloop()
+
+
+def librarians_window():
+    librarians_window = Toplevel(window)
+    librarians_window.geometry("1191x670+60+30")
+    librarians_window.resizable(0, 0)
+    librarians_window.title("Librarians")
+
+    # Background image of books window
+    img = Image.open("images/management_window.png")
+    resized_image = img.resize((1240, 670))
+    books_bg = ImageTk.PhotoImage(resized_image)
+    books_bg_image = Label(librarians_window, image=books_bg)
+    books_bg_image.place(x=0, y=0)
+
+    def librarians_window_logout():
+        ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=librarians_window)
+        if ans:
+            window.destroy()
+            librarians_window.destroy()
+            username.delete(0, END)
+            password.delete(0, END)
+            username.focus()
+
+    # Buttons
+    search_button = Button(librarians_window, text="Search", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                           cursor="hand2")
+    search_button.place(x=295, y=169)
+
+    add_button = Button(librarians_window, text="Add Librarian", border=0, bg="#364954", fg="white",
+                        activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                        cursor="hand2")
+    add_button.place(x=155, y=297)
+
+    update_button = Button(librarians_window, text="Update Librarian", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
+                           cursor="hand2")
+    update_button.place(x=137, y=370)
+
+    remove_button = Button(librarians_window, text="Remove Librarian", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
+                           cursor="hand2")
+    remove_button.place(x=132, y=442)
+
+    exit_button = Button(librarians_window, text="Exit", border=0, bg="#364954", fg="white", activebackground="#364954",
+                         activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=librarians_window.destroy)
+    exit_button.place(x=198, y=525)
+
+    librarians_window_logout = Button(librarians_window, text="Log Out", border=0, bg="#364954", fg="white",
+                                      activebackground="#364954", activeforeground="#84B1CB",
+                                      font=("Poppins", 14, "bold"), cursor="hand2", command=librarians_window_logout)
+    librarians_window_logout.place(x=1013, y=597)
+
+    # Entry
+    librarians_id = Entry(librarians_window, width=18, border=0, bg="#a7b3bb", font=("Poppins", 15))
+    librarians_id.place(x=67, y=178)
+    librarians_id.focus()
+
+    # Label
+    Label(librarians_window, text="Menu", bg="#a7b3bb", font=("Times New Roman", 19)).place(x=77, y=85)
+
+    mainloop()
+
+
+def students_window():
+    students_window = Toplevel(window)
+    students_window.geometry("1191x670+60+30")
+    students_window.resizable(0, 0)
+    students_window.title("Students")
+
+    # Background image of books window
+    img = Image.open("images/management_window.png")
+    resized_image = img.resize((1240, 670))
+    books_bg = ImageTk.PhotoImage(resized_image)
+    books_bg_image = Label(students_window, image=books_bg)
+    books_bg_image.place(x=0, y=0)
+
+    def students_window_logout():
+        ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=students_window)
+        if ans:
+            window.destroy()
+            students_window.destroy()
+            username.delete(0, END)
+            password.delete(0, END)
+            username.focus()
+
+    # Buttons
+    search_button = Button(students_window, text="Search", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                           cursor="hand2")
+    search_button.place(x=295, y=169)
+
+    add_button = Button(students_window, text="Add Student", border=0, bg="#364954", fg="white",
+                        activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
+                        cursor="hand2")
+    add_button.place(x=155, y=297)
+
+    update_button = Button(students_window, text="Update Student", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
+                           cursor="hand2")
+    update_button.place(x=142, y=370)
+
+    remove_button = Button(students_window, text="Remove Student", border=0, bg="#364954", fg="white",
+                           activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
+                           cursor="hand2")
+    remove_button.place(x=139, y=442)
+
+    exit_button = Button(students_window, text="Exit", border=0, bg="#364954", fg="white", activebackground="#364954",
+                         activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=students_window.destroy)
+    exit_button.place(x=198, y=525)
+
+    students_window_logout = Button(students_window, text="Log Out", border=0, bg="#364954", fg="white",
+                                    activebackground="#364954", activeforeground="#84B1CB",
+                                    font=("Poppins", 14, "bold"), cursor="hand2", command=students_window_logout)
+    students_window_logout.place(x=1013, y=597)
+
+    # Entry
+    student_id = Entry(students_window, width=18, border=0, bg="#a7b3bb", font=("Poppins", 15))
+    student_id.place(x=67, y=178)
+    student_id.focus()
+
+    # Label
+    Label(students_window, text="Menu", bg="#a7b3bb", font=("Times New Roman", 19)).place(x=77, y=85)
+
+    mainloop()
+
+
+login_window()
