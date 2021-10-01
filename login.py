@@ -698,6 +698,77 @@ def librarians_window():
             password.delete(0, END)
             username.focus()
 
+    def search():
+        for widgets in myFrame.winfo_children():
+            widgets.destroy()
+
+        Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 12, "bold")).grid(row=1, column=0)
+        Label(myFrame, text="Librarian Name", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=15).grid(
+            row=1,
+            column=1)
+        Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=8).grid(row=1,
+                                                                                                          column=2)
+        Label(myFrame, text="Username", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=1,
+                                                                                                                 column=3)
+        Label(myFrame, text="Password", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=1,
+                                                                                                                 column=4)
+        Label(myFrame, text="Contact", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=10).grid(row=1,
+                                                                                                                column=5)
+
+        if librarians_id.get() != '':
+            conn = sqlite3.connect('librarians_database.db')
+
+            c = conn.cursor()
+
+            c.execute("SELECT *, oid FROM librarian_details")
+
+            records = c.fetchall()
+
+            roww = 2
+            num = 1
+            for record in records:
+                if record[1] == int(librarians_id.get()):
+                    Label(myFrame, text=num, bg="cyan", font=("MS Reference Sans Serif", 10), width=5).grid(row=0,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="cyan", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=0, column=1)
+                    Label(myFrame, text=record[1], bg="cyan", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=0, column=2)
+                    Label(myFrame, text=record[2], bg="cyan", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=0, column=3)
+                    Label(myFrame, text=record[3], bg="cyan", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=0, column=4)
+                    Label(myFrame, text=record[5], bg="cyan", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=0, column=5)
+
+                if record[1] > 0:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=roww,
+                        column=1)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=4)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=roww,
+                        column=5)
+
+                    roww += 1
+                    num += 1
+
+                myFrame.config(bg="white")
+
+            conn.commit()
+            conn.close()
+
+
     def add_librarian_window():
         add_window = Toplevel()
         add_window.title("Add Librarian")
@@ -747,7 +818,7 @@ def librarians_window():
                 for record in records:
                     Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
                                                                                                              column=0)
-                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
                         row=roww,
                         column=1)
                     Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
@@ -759,7 +830,7 @@ def librarians_window():
                     Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
                         row=roww,
                         column=4)
-                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
                         row=roww,
                         column=5)
 
@@ -831,7 +902,7 @@ def librarians_window():
     # Buttons
     search_button = Button(librarians_window, text="Search", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=search)
     search_button.place(x=295, y=169)
 
     add_button = Button(librarians_window, text="Add Librarian", border=0, bg="#364954", fg="white",
@@ -900,7 +971,7 @@ def librarians_window():
 
     for record in records:
         Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
-        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(row=roww,
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(row=roww,
                                                                                                         column=1)
         Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(row=roww,
                                                                                                         column=2)
@@ -908,7 +979,7 @@ def librarians_window():
                                                                                                         column=3)
         Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
                                                                                                        column=4)
-        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(row=roww,
                                                                                                                column=5)
 
         roww += 1
