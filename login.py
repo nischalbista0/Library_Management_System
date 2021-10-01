@@ -1233,6 +1233,19 @@ def students_window():
     books_bg_image = Label(students_window, image=books_bg)
     books_bg_image.place(x=0, y=0)
 
+    conn = sqlite3.connect('students_database.db')
+
+    c = conn.cursor()
+
+    # c.execute('''CREATE TABLE student_details(
+    # Student_Name text,
+    # Student_ID integer,
+    # Username text,
+    # Password text,
+    # Email text,
+    # Contact_Num integer
+    # )''')
+
     def students_window_logout():
         ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=students_window)
         if ans:
@@ -1242,25 +1255,170 @@ def students_window():
             password.delete(0, END)
             username.focus()
 
+    def search():
+        pass
+
+    def add_student_window():
+        add_window = Toplevel()
+        add_window.title("Add Student")
+        add_window.geometry("1191x670+60+30")
+        add_window.resizable(0, 0)
+
+        # Read the Image
+        image = Image.open("images/add_and_update.png")
+
+        # Resize the image using resize() method
+        resize_image = image.resize((1191, 670))
+
+        # Displaying background image
+        bg = ImageTk.PhotoImage(resize_image)
+        bg_image = Label(add_window, image=bg)
+        bg_image.place(x=0, y=0)
+
+        def add_student():
+            if student_name.get() != '' and student_ID.get() != '' and username.get() != '' and password.get() != '' and \
+                    email.get() != '' and contact_num.get() != '':
+
+                conn = sqlite3.connect("students_database.db")
+
+                # Create cursor
+                c = conn.cursor()
+
+                # Insert into table
+                c.execute(
+                    "INSERT INTO student_details VALUES (:Student_Name, :Student_ID, :Username, :Password, :Email, :Contact_Num)",
+                    {
+                        'Student_Name': student_name.get(),
+                        'Student_ID': student_ID.get(),
+                        'Username': username.get(),
+                        'Password': password.get(),
+                        'Email': email.get(),
+                        'Contact_Num': contact_num.get(),
+                    })
+
+                # query of the database
+                c.execute("SELECT *, oid FROM student_details")
+
+                # print(records)
+                records = c.fetchall()
+
+                roww = 1
+                num = 1
+                for record in records:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=roww,
+                        column=1)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=4)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=roww,
+                        column=5)
+
+                    roww += 1
+                    num += 1
+
+                conn.commit()
+                conn.close()
+                add_window.destroy()
+
+        def clear_add_window():
+            entries = [student_name, student_ID, username, password, email, contact_num]
+            for entry in entries:
+                entry.delete(0, END)
+
+        # Creating and placing labels
+        label1 = Label(add_window, text="Student Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label1.place(x=175, y=150)
+
+        label2 = Label(add_window, text="Student ID", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label2.place(x=630, y=150)
+
+        label3 = Label(add_window, text="Username", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label3.place(x=178, y=250)
+
+        label4 = Label(add_window, text="Password", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label4.place(x=630, y=250)
+
+        label5 = Label(add_window, text="E-mail", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label5.place(x=175, y=353)
+
+        label6 = Label(add_window, text="Contact Number", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label6.place(x=630, y=353)
+
+        # Creating and placing entries
+        student_name = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                               fg="black")
+        student_name.place(x=180, y=185)
+        student_name.focus()
+
+        student_ID = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        student_ID.place(x=635, y=185)
+
+        username = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        username.place(x=180, y=285)
+
+        password = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        password.place(x=635, y=285)
+
+        email = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        email.place(x=180, y=388)
+
+        contact_num = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        contact_num.place(x=635, y=388)
+
+        # Creating and placing buttons
+        add_button = Button(add_window, text="Add", border=0, bg="#364954", fg="white", activebackground="#364954",
+                            activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                            command=add_student)
+        add_button.place(x=477, y=506)
+
+        clear_button = Button(add_window, text="Clear", border=0, bg="#364954", fg="white", activebackground="#364954",
+                              activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                              command=clear_add_window)
+        clear_button.place(x=655, y=506)
+
+        mainloop()
+
+    def update_student_window():
+        pass
+
+    def remove_student():
+        pass
+
     # Buttons
     search_button = Button(students_window, text="Search", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=search)
     search_button.place(x=295, y=169)
 
     add_button = Button(students_window, text="Add Student", border=0, bg="#364954", fg="white",
                         activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                        cursor="hand2")
+                        cursor="hand2", command=add_student_window)
     add_button.place(x=155, y=297)
 
     update_button = Button(students_window, text="Update Student", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=update_student_window)
     update_button.place(x=142, y=370)
 
     remove_button = Button(students_window, text="Remove Student", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 14, "bold"),
-                           cursor="hand2")
+                           cursor="hand2", command=remove_student)
     remove_button.place(x=139, y=442)
 
     exit_button = Button(students_window, text="Exit", border=0, bg="#364954", fg="white", activebackground="#364954",
@@ -1295,6 +1453,45 @@ def students_window():
     scrollbar.pack(side=RIGHT, fill='y')
     myCanvas.config(yscrollcommand=scrollbar.set)
     myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
+
+    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 12, "bold")).grid(row=0, column=0)
+    Label(myFrame, text="Student Name", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=15).grid(
+        row=0,
+        column=1)
+    Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=8).grid(row=0,
+                                                                                                      column=2)
+    Label(myFrame, text="Username", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=0,
+                                                                                                             column=3)
+    Label(myFrame, text="Password", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=0,
+                                                                                                             column=4)
+    Label(myFrame, text="Contact", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=10).grid(row=0,
+                                                                                                            column=5)
+
+    c.execute("SELECT *,oid FROM student_details")
+
+    records = c.fetchall()
+
+    roww = 1
+    num = 1
+
+    for record in records:
+        Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(row=roww,
+                                                                                                        column=1)
+        Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(row=roww,
+                                                                                                        column=2)
+        Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+                                                                                                        column=3)
+        Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+                                                                                                        column=4)
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(row=roww,
+                                                                                                        column=5)
+
+        roww += 1
+        num += 1
+
+    conn.commit()
+    conn.close()
 
     mainloop()
 
