@@ -1069,8 +1069,6 @@ def librarians_window():
 
             mainloop()
 
-
-
     def remove_librarian():
         if librarians_id.get() != '':
             # create database
@@ -1462,7 +1460,178 @@ def students_window():
         mainloop()
 
     def update_student_window():
-        pass
+        if student_id.get() != '':
+            update_window = Toplevel()
+            update_window.title("Update Student")
+            update_window.geometry("1191x670+60+30")
+            update_window.resizable(0, 0)
+
+            # Read the Image
+            image = Image.open("images/add_and_update.png")
+
+            # Resize the image using resize() method
+            resize_image = image.resize((1191, 670))
+
+            # Displaying background image
+            bg = ImageTk.PhotoImage(resize_image)
+            bg_image = Label(update_window, image=bg)
+            bg_image.place(x=0, y=0)
+
+            def update_student():
+                # Create a databases or connect to one
+                conn = sqlite3.connect("students_database.db")
+
+                # Create cursor
+                c = conn.cursor()
+                record_id = student_id.get()
+
+                c.execute(""" UPDATE student_details SET
+                                    Student_Name = :student_name,
+                                    Student_ID = :student_id,
+                                    Username = :username,
+                                    Password = :password,
+                                    Email = :email,
+                                    Contact_Num = :contact_num
+                                    WHERE Student_ID = :id""",
+                          {'student_name': student_name.get(),
+                           'student_id': student_ID.get(),
+                           'username': username.get(),
+                           'password': password.get(),
+                           'email': email.get(),
+                           'contact_num': contact_num.get(),
+                           'id': record_id
+
+                           }
+                          )
+
+                update_window.destroy()
+
+                # query of the database
+                c.execute("SELECT *, oid FROM student_details")
+
+                records = c.fetchall()
+
+                # Loop through the results
+                roww = 1
+                num = 1
+                for record in records:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=roww,
+                        column=1)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=4)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=roww,
+                        column=5)
+
+                    roww += 1
+                    num += 1
+
+                conn.commit()
+                conn.close()
+
+            def clear_update_window():
+                entries = [student_name, student_ID, username, password, email, contact_num]
+                for entry in entries:
+                    entry.delete(0, END)
+
+            # Create a databases or connect to one
+            conn = sqlite3.connect("students_database.db")
+
+            # Create cursor
+            c = conn.cursor()
+
+            # Creating and placing labels
+            label1 = Label(update_window, text="Student Name", font=("MS Reference Sans Serif", 16, "bold"),
+                           bg="#a7b3bb", fg="#232E34")
+            label1.place(x=175, y=150)
+
+            label2 = Label(update_window, text="Student ID", font=("MS Reference Sans Serif", 16, "bold"),
+                           bg="#a7b3bb",
+                           fg="#232E34")
+            label2.place(x=630, y=150)
+
+            label3 = Label(update_window, text="Username", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label3.place(x=178, y=250)
+
+            label4 = Label(update_window, text="Password", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label4.place(x=630, y=250)
+
+            label5 = Label(update_window, text="E-mail", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                           fg="#232E34")
+            label5.place(x=175, y=353)
+
+            label6 = Label(update_window, text="Contact Number", font=("MS Reference Sans Serif", 16, "bold"),
+                           bg="#a7b3bb", fg="#232E34")
+            label6.place(x=630, y=353)
+
+            # Creating and placing entries
+            student_name = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                                   fg="black")
+            student_name.place(x=180, y=185)
+            student_name.focus()
+
+            student_ID = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                                 fg="black")
+            student_ID.place(x=635, y=185)
+
+            username = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                             fg="black")
+            username.place(x=180, y=285)
+
+            password = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                             fg="black")
+            password.place(x=635, y=285)
+
+            email = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+            email.place(x=180, y=388)
+
+            contact_num = Entry(update_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb",
+                                fg="black")
+            contact_num.place(x=635, y=388)
+
+            # Creating and placing buttons
+            update_button = Button(update_window, text="Update", border=0, bg="#364954", fg="white",
+                                   activebackground="#364954",
+                                   activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                                   command=update_student)
+            update_button.place(x=465, y=506)
+
+            clear_button = Button(update_window, text="Clear", border=0, bg="#364954", fg="white",
+                                  activebackground="#364954",
+                                  activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                                  command=clear_update_window)
+            clear_button.place(x=655, y=506)
+
+            id = student_id.get()
+
+            c.execute("SELECT * FROM student_details WHERE Student_ID=" + id)
+            records = c.fetchall()
+
+            # loop through the results
+            for record in records:
+                student_name.insert(0, record[0])
+                student_ID.insert(0, record[1])
+                username.insert(0, record[2])
+                password.insert(0, record[3])
+                email.insert(0, record[4])
+                contact_num.insert(0, record[5])
+
+            conn.commit()
+            conn.close()
+
+            mainloop()
 
     def remove_student():
         if student_id.get() != '':
