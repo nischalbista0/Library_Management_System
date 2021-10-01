@@ -159,7 +159,7 @@ def books_window():
     # Books_Name text,
     # Category text,
     # Author_Name text,
-    # Language integer,
+    # Language text,
     # Publication text,
     # Quantity integer
     # )''')
@@ -524,7 +524,6 @@ def books_window():
 
             mainloop()
 
-
     def remove_book():
         if book_id.get() != '':
             # create database
@@ -677,6 +676,19 @@ def librarians_window():
     books_bg_image = Label(librarians_window, image=books_bg)
     books_bg_image.place(x=0, y=0)
 
+    conn = sqlite3.connect('librarians_database.db')
+
+    c = conn.cursor()
+
+    # c.execute('''CREATE TABLE librarian_details(
+    # Librarian_Name text,
+    # Librarian_ID integer,
+    # Username text,
+    # Password text,
+    # Email text,
+    # Contact_Num integer
+    # )''')
+
     def librarians_window_logout():
         ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=librarians_window)
         if ans:
@@ -686,6 +698,136 @@ def librarians_window():
             password.delete(0, END)
             username.focus()
 
+    def add_librarian_window():
+        add_window = Toplevel()
+        add_window.title("Add Librarian")
+        add_window.geometry("1191x670+60+30")
+        add_window.resizable(0, 0)
+
+        # Read the Image
+        image = Image.open("images/add_and_update.png")
+
+        # Resize the image using resize() method
+        resize_image = image.resize((1191, 670))
+
+        # Displaying background image
+        bg = ImageTk.PhotoImage(resize_image)
+        bg_image = Label(add_window, image=bg)
+        bg_image.place(x=0, y=0)
+
+        def add_librarian():
+            if librarian_name.get() != '' and librarian_ID.get() != '' and username.get() != '' and password.get() != '' and\
+                    email.get() != '' and contact_num.get() != '':
+
+                conn = sqlite3.connect("librarians_database.db")
+
+                # Create cursor
+                c = conn.cursor()
+
+                # Insert into table
+                c.execute(
+                    "INSERT INTO librarian_details VALUES (:Librarian_Name, :Librarian_ID, :Username, :Password, :Email, :Contact_Num)",
+                    {
+                        'Librarian_Name': librarian_name.get(),
+                        'Librarian_ID': librarian_ID.get(),
+                        'Username': username.get(),
+                        'Password': password.get(),
+                        'Email': email.get(),
+                        'Contact_Num': contact_num.get(),
+                    })
+
+                # query of the database
+                c.execute("SELECT *, oid FROM librarian_details")
+
+                # print(records)
+                records = c.fetchall()
+
+                roww = 1
+                num = 1
+                for record in records:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(
+                        row=roww,
+                        column=1)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=4)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=5)
+
+                    roww += 1
+                    num += 1
+
+                conn.commit()
+                conn.close()
+                add_window.destroy()
+
+        def clear_add_window():
+            entries = [librarian_name, librarian_ID, username, password, email, contact_num]
+            for entry in entries:
+                entry.delete(0, END)
+
+        # Creating and placing labels
+        label1 = Label(add_window, text="Librarian Name", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label1.place(x=175, y=150)
+
+        label2 = Label(add_window, text="Librarian ID", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label2.place(x=630, y=150)
+
+        label3 = Label(add_window, text="Username", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label3.place(x=178, y=250)
+
+        label4 = Label(add_window, text="Password", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label4.place(x=630, y=250)
+
+        label5 = Label(add_window, text="E-mail", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb",
+                       fg="#232E34")
+        label5.place(x=175, y=353)
+
+        label6 = Label(add_window, text="Contact Number", font=("MS Reference Sans Serif", 16, "bold"), bg="#a7b3bb", fg="#232E34")
+        label6.place(x=630, y=353)
+
+        # Creating and placing entries
+        librarian_name = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        librarian_name.place(x=180, y=185)
+        librarian_name.focus()
+
+        librarian_ID = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        librarian_ID.place(x=635, y=185)
+
+        username = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        username.place(x=180, y=285)
+
+        password = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        password.place(x=635, y=285)
+
+        email = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        email.place(x=180, y=388)
+
+        contact_num = Entry(add_window, bd=0, font=("MS Reference Sans Serif", 15), width=28, bg="#a7b3bb", fg="black")
+        contact_num.place(x=635, y=388)
+
+        # Creating and placing buttons
+        add_button = Button(add_window, text="Add", border=0, bg="#364954", fg="white", activebackground="#364954",
+                            activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=add_librarian)
+        add_button.place(x=477, y=506)
+
+        clear_button = Button(add_window, text="Clear", border=0, bg="#364954", fg="white", activebackground="#364954",
+                              activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
+                              command=clear_add_window)
+        clear_button.place(x=655, y=506)
+
+        mainloop()
+
     # Buttons
     search_button = Button(librarians_window, text="Search", border=0, bg="#364954", fg="white",
                            activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
@@ -694,7 +836,7 @@ def librarians_window():
 
     add_button = Button(librarians_window, text="Add Librarian", border=0, bg="#364954", fg="white",
                         activebackground="#364954", activeforeground="#84B1CB", font=("Poppins", 15, "bold"),
-                        cursor="hand2")
+                        cursor="hand2", command=add_librarian_window)
     add_button.place(x=155, y=297)
 
     update_button = Button(librarians_window, text="Update Librarian", border=0, bg="#364954", fg="white",
@@ -723,6 +865,57 @@ def librarians_window():
 
     # Label
     Label(librarians_window, text="Menu", bg="#a7b3bb", font=("Times New Roman", 19)).place(x=77, y=85)
+
+    # Create Frame with scrollbar
+    cover = LabelFrame(librarians_window, height=800, width=1000, bd=0)
+    cover.place(x=416, y=105)
+
+    myCanvas = Canvas(cover, height=472, width=676, bg="white")
+    myCanvas.pack(side=LEFT, fill='y', expand='yes')
+
+    myFrame = Frame(myCanvas)
+    myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
+
+    scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
+    scrollbar.pack(side=RIGHT, fill='y')
+    myCanvas.config(yscrollcommand=scrollbar.set)
+    myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
+
+    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 12, "bold")).grid(row=0, column=0)
+    Label(myFrame, text="Librarian Name", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=15).grid(row=0,
+                                                                                                              column=1)
+    Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=8).grid(row=0,
+                                                                                                                column=2)
+    Label(myFrame, text="Username", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=0,
+                                                                                                             column=3)
+    Label(myFrame, text="Password", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=0, column=4)
+    Label(myFrame, text="Contact", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=10).grid(row=0, column=5)
+
+    c.execute("SELECT *,oid FROM librarian_details")
+
+    records = c.fetchall()
+
+    roww = 1
+    num = 1
+
+    for record in records:
+        Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=20).grid(row=roww,
+                                                                                                        column=1)
+        Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(row=roww,
+                                                                                                        column=2)
+        Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+                                                                                                        column=3)
+        Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+                                                                                                       column=4)
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww,
+                                                                                                               column=5)
+
+        roww += 1
+        num += 1
+
+    conn.commit()
+    conn.close()
 
     mainloop()
 
@@ -787,6 +980,21 @@ def students_window():
 
     # Label
     Label(students_window, text="Menu", bg="#a7b3bb", font=("Times New Roman", 19)).place(x=77, y=85)
+
+    # Create Frame with scrollbar
+    cover = LabelFrame(students_window, height=800, width=1000, bd=0)
+    cover.place(x=416, y=105)
+
+    myCanvas = Canvas(cover, height=472, width=676, bg="white")
+    myCanvas.pack(side=LEFT, fill='y', expand='yes')
+
+    myFrame = Frame(myCanvas)
+    myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
+
+    scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
+    scrollbar.pack(side=RIGHT, fill='y')
+    myCanvas.config(yscrollcommand=scrollbar.set)
+    myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
 
     mainloop()
 
