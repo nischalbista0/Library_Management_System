@@ -1465,7 +1465,60 @@ def students_window():
         pass
 
     def remove_student():
-        pass
+        if student_id.get() != '':
+            # create database
+            conn = sqlite3.connect("students_database.db")
+
+            # create cursor
+            c = conn.cursor()
+
+            # delete a record
+            c.execute("DELETE from student_details WHERE Student_ID = " + student_id.get())
+
+            # query of the database
+            c.execute("SELECT *, oid FROM student_details")
+
+            records = c.fetchall()
+
+            # Loop through the results
+            roww = 1
+            num = 1
+            for record in records:
+                Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                         column=0)
+                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
+                    row=roww,
+                    column=1)
+                Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                    row=roww,
+                    column=2)
+                Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                    row=roww,
+                    column=3)
+                Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                    row=roww,
+                    column=4)
+                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
+                    row=roww,
+                    column=5)
+
+                roww += 1
+                num += 1
+
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=0)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(row=roww, column=1)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(row=roww, column=2)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww, column=3)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(row=roww, column=4)
+            Label(myFrame, text='', bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(row=roww, column=5)
+
+            student_id.delete(0, END)
+
+            conn.commit()
+            conn.close()
+
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid book ID to continue.", parent=students_window)
 
     # Buttons
     search_button = Button(students_window, text="Search", border=0, bg="#364954", fg="white",
