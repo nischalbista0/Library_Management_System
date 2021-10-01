@@ -1256,7 +1256,74 @@ def students_window():
             username.focus()
 
     def search():
-        pass
+        for widgets in myFrame.winfo_children():
+            widgets.destroy()
+
+        Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 12, "bold")).grid(row=1, column=0)
+        Label(myFrame, text="Student Name", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=15).grid(
+            row=1,
+            column=1)
+        Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=8).grid(row=1,
+                                                                                                          column=2)
+        Label(myFrame, text="Username", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=1,
+                                                                                                                 column=3)
+        Label(myFrame, text="Password", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=11).grid(row=1,
+                                                                                                                 column=4)
+        Label(myFrame, text="Contact", bg="white", font=("MS Reference Sans Serif", 12, "bold"), width=10).grid(row=1,
+                                                                                                                column=5)
+
+        if student_id.get() != '':
+            conn = sqlite3.connect('students_database.db')
+
+            c = conn.cursor()
+
+            c.execute("SELECT *, oid FROM student_details")
+
+            records = c.fetchall()
+
+            roww = 2
+            num = 1
+            for record in records:
+                if record[1] == int(student_id.get()):
+                    Label(myFrame, text=num, bg="cyan", font=("MS Reference Sans Serif", 10), width=5).grid(row=0,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="cyan", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=0, column=1)
+                    Label(myFrame, text=record[1], bg="cyan", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=0, column=2)
+                    Label(myFrame, text=record[2], bg="cyan", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=0, column=3)
+                    Label(myFrame, text=record[3], bg="cyan", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=0, column=4)
+                    Label(myFrame, text=record[5], bg="cyan", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=0, column=5)
+
+                if record[1] > 0:
+                    Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww,
+                                                                                                             column=0)
+                    Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=21).grid(
+                        row=roww,
+                        column=1)
+                    Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=11).grid(
+                        row=roww,
+                        column=2)
+                    Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=3)
+                    Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=15).grid(
+                        row=roww,
+                        column=4)
+                    Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=16).grid(
+                        row=roww,
+                        column=5)
+
+                    roww += 1
+                    num += 1
+
+                myFrame.config(bg="white")
+
+            conn.commit()
+            conn.close()
 
     def add_student_window():
         add_window = Toplevel()
