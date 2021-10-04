@@ -9,6 +9,8 @@ from datetime import date
 
 
 def login_window():
+    """Opens login window"""
+
     global username
     global password
     global root
@@ -39,8 +41,7 @@ def login_window():
 
     # Creating and placing button
     login_button = Button(root, text="Log In ", border=0, bg="#364954", fg="white", activebackground="#364954",
-                          activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2",
-                          command=open_dashboard)
+                          activeforeground="#84B1CB", font=("Poppins", 18, "bold"), cursor="hand2", command=open_dashboard)
     login_button.place(x=885, y=410)
 
     # Creating and placing entries
@@ -54,7 +55,10 @@ def login_window():
     mainloop()
 
 
+# Function that opens dashboard of librarian or student window
 def open_dashboard():
+    """Takes data through entries for login and opens dashboard of respective window"""
+
     global window
     global std_username
 
@@ -96,6 +100,7 @@ def open_dashboard():
     conn.commit()
     conn.close()
 
+    # Show message box if username and password entry is empty
     if username.get() == '' or password.get() == '':
         messagebox.showinfo("Incomplete Information", "Please enter both username and password to continue!")
 
@@ -123,6 +128,8 @@ def open_dashboard():
         background_image.place(x=0, y=0)
 
         def logout():
+            """Destroys student window and opens login window"""
+
             ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=student_window)
             if ans:
                 student_window.destroy()
@@ -144,18 +151,17 @@ def open_dashboard():
 
         issued_books_button = ImageTk.PhotoImage(resized_image3)
         issued_books_button_image = Button(student_window, image=issued_books_button, border=0, bg="white",
-                                           activebackground="white",
-                                           cursor="hand2", command=my_books)
+                                           activebackground="white", cursor="hand2", command=my_books)
         issued_books_button_image.place(x=685, y=240)
         Label(student_window, text="My Books", bg="white", font=("Poppins", 13, "bold")).place(x=702, y=328)
 
-        logout_button = Button(student_window, text="Log Out", border=0, bg="#364954", fg="white",
-                               activebackground="#364954",
+        logout_button = Button(student_window, text="Log Out", border=0, bg="#364954", fg="white", activebackground="#364954",
                                activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=logout)
         logout_button.place(x=1020, y=580)
 
         mainloop()
 
+    # Librarians window login
     elif username.get() in librarian_username and password.get() in librarian_password:
         window = Toplevel(root)
         window.geometry("1191x670+60+30")
@@ -164,6 +170,7 @@ def open_dashboard():
         window.title("Admin Dashboard")
 
         def logout():
+            """Destroys librarian window and opens login window"""
             ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=window)
             if ans:
                 window.destroy()
@@ -233,11 +240,14 @@ def open_dashboard():
 
         mainloop()
 
+    # Shows messagebox if user enter wrong credentials
     elif (username.get() not in student_username and password.get() not in student_password) or (username.get() in librarian_username and password.get() in librarian_password):
         messagebox.showinfo("Invalid Information", "Please enter correct username and password to continue!", parent=root)
 
 
 def books_window():
+    """Opens books window when respective button is clicked"""
+
     books_window = Toplevel(window)
     books_window.geometry("1191x670+60+30")
     books_window.resizable(0, 0)
@@ -265,6 +275,7 @@ def books_window():
     # )''')
 
     def books_window_logout():
+        """Destroys books window and opens login window"""
         ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=books_window)
         if ans:
             window.destroy()
@@ -274,6 +285,8 @@ def books_window():
             username.focus()
 
     def search():
+        """Takes Book ID as input and searches book of respective book ID"""
+
         for widgets in myFrame.winfo_children():
             widgets.destroy()
 
@@ -342,6 +355,8 @@ def books_window():
             messagebox.showinfo("Invalid Book ID", "Please enter valid Book ID to continue!", parent=books_window)
 
     def add_book_window():
+        """Opens 'Add Book' window"""
+
         add = Toplevel()
         add.title("Add Book")
         add.geometry("1191x670+60+30")
@@ -360,6 +375,8 @@ def books_window():
         bg_image.place(x=0, y=0)
 
         def add_book():
+            """Adds data of book's details into the database"""
+
             if book_name.get() != '' and category.get() != '' and author_name.get() != '' and language.get() != '' and\
                     publication.get() != '' and quantity.get() != '':
 
@@ -413,6 +430,7 @@ def books_window():
                 messagebox.showinfo("Incomplete Information", "Please fill all the entries to continue!", parent=add)
 
         def clear_add_window():
+            """Clears all the entries of "Add Book' window"""
             entries = [book_name, category, author_name, language, publication, quantity]
             for entry in entries:
                 entry.delete(0, END)
@@ -471,12 +489,13 @@ def books_window():
         mainloop()
 
     def update_book_window():
+        """Opens 'Update Book' window"""
         if book_id.get() != '':
             update_window = Toplevel()
             update_window.title("Update Book")
             update_window.geometry("1191x670+60+30")
             update_window.resizable(0, 0)
-            update.iconbitmap("images/icon.ico")
+            update_window.iconbitmap("images/icon.ico")
 
             # Read the Image
             image = Image.open("images/add_and_update.png")
@@ -490,6 +509,7 @@ def books_window():
             bg_image.place(x=0, y=0)
 
             def update_book():
+                """Updates data of book's details into the database"""
                 # Create a databases or connect to one
                 conn = sqlite3.connect("books_database.db")
 
@@ -547,6 +567,7 @@ def books_window():
                 conn.close()
 
             def clear_update_window():
+                """Clears all the entries of 'Uodate Book' window"""
                 entries = [book_name, category, author_name, language, publication, quantity]
                 for entry in entries:
                     entry.delete(0, END)
@@ -635,8 +656,8 @@ def books_window():
         else:
             messagebox.showinfo("Invalid Book ID", "Please enter valid Book ID to continue!", parent=books_window)
 
-
     def remove_book():
+        """Removes data of book's details from the database"""
         if book_id.get() != '':
             # create database
             conn = sqlite3.connect("books_database.db")
@@ -776,6 +797,7 @@ def books_window():
 
 
 def librarians_window():
+    """Opens librarian window when respective button is clicked"""
     librarians_window = Toplevel(window)
     librarians_window.geometry("1191x670+60+30")
     librarians_window.resizable(0, 0)
@@ -803,6 +825,7 @@ def librarians_window():
     # )''')
 
     def librarians_window_logout():
+        """Destroys librarian window and opens login window"""
         ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=librarians_window)
         if ans:
             window.destroy()
@@ -812,6 +835,7 @@ def librarians_window():
             username.focus()
 
     def search():
+        """Takes librarian ID as input and searches librarian of respective ID"""
         for widgets in myFrame.winfo_children():
             widgets.destroy()
 
@@ -885,6 +909,7 @@ def librarians_window():
             messagebox.showinfo("Invalid Book ID", "Please enter valid Librarian ID to continue!", parent=librarians_window)
 
     def add_librarian_window():
+        """Opens 'Add Librarian' window"""
         add_window = Toplevel()
         add_window.title("Add Librarian")
         add_window.geometry("1191x670+60+30")
@@ -903,6 +928,7 @@ def librarians_window():
         bg_image.place(x=0, y=0)
 
         def add_librarian():
+            """Adds data of librarian's details into the database"""
             if librarian_name.get() != '' and librarian_ID.get() != '' and username.get() != '' and password.get() != '' and\
                     email.get() != '' and contact_num.get() != '':
 
@@ -961,6 +987,7 @@ def librarians_window():
                 messagebox.showinfo("Incomplete Information", "Please fill all entries to continue!", parent=add_window)
 
         def clear_add_window():
+            """Clears all the entries of 'Add Librarian' window"""
             entries = [librarian_name, librarian_ID, username, password, email, contact_num]
             for entry in entries:
                 entry.delete(0, END)
@@ -1019,6 +1046,7 @@ def librarians_window():
         mainloop()
 
     def update_librarian_window():
+        """Opens 'Update Librarian' window"""
         if librarians_id.get() != '':
             update_window = Toplevel()
             update_window.title("Update Book")
@@ -1038,6 +1066,7 @@ def librarians_window():
             bg_image.place(x=0, y=0)
 
             def update_librarian():
+                """Updates data of librarian's details in the database"""
                 # Create a databases or connect to one
                 conn = sqlite3.connect("librarians_database.db")
 
@@ -1100,6 +1129,7 @@ def librarians_window():
                 conn.close()
 
             def clear_update_window():
+                """Clears all the entries of 'Update Librarian' window"""
                 entries = [librarian_name, librarian_ID, username, password, email, contact_num]
                 for entry in entries:
                     entry.delete(0, END)
@@ -1193,6 +1223,7 @@ def librarians_window():
             messagebox.showinfo("Invalid Book ID", "Please enter valid Librarian ID to continue!", parent=librarians_window)
 
     def remove_librarian():
+        """Removes data of librarian's details from the database"""
         if librarians_id.get() != '':
             # create database
             conn = sqlite3.connect("librarians_database.db")
@@ -1341,7 +1372,9 @@ def librarians_window():
     mainloop()
 
 
+# Function that opens student window
 def students_window():
+    """Opens student window when respective button is clicked"""
     students_window = Toplevel(window)
     students_window.geometry("1191x670+60+30")
     students_window.resizable(0, 0)
@@ -1369,6 +1402,7 @@ def students_window():
     # )''')
 
     def students_window_logout():
+        """Destroys student window and opens login window"""
         ans = messagebox.askyesno("Confirm Logout", "Are you sure you want to logout?", parent=students_window)
         if ans:
             window.destroy()
@@ -1378,6 +1412,7 @@ def students_window():
             username.focus()
 
     def search():
+        """Takes student ID as input and searches student with respective ID"""
         for widgets in myFrame.winfo_children():
             widgets.destroy()
 
@@ -1450,8 +1485,8 @@ def students_window():
         else:
             messagebox.showinfo("Invalid Student ID", "Please enter valid Student ID to continue!", parent=students_window)
 
-
     def add_student_window():
+        """Opens 'Add Student' window"""
         add_window = Toplevel()
         add_window.title("Add Student")
         add_window.geometry("1191x670+60+30")
@@ -1470,6 +1505,7 @@ def students_window():
         bg_image.place(x=0, y=0)
 
         def add_student():
+            """Adds data of student's details into the database"""
             if student_name.get() != '' and student_ID.get() != '' and username.get() != '' and password.get() != '' and \
                     email.get() != '' and contact_num.get() != '':
 
@@ -1528,6 +1564,7 @@ def students_window():
                 messagebox.showinfo("Incomplete Information", "Please fill all entries to continue!", parent=students_window)
 
         def clear_add_window():
+            """Clears all the entries of 'Add Student' window"""
             entries = [student_name, student_ID, username, password, email, contact_num]
             for entry in entries:
                 entry.delete(0, END)
@@ -1592,6 +1629,7 @@ def students_window():
         mainloop()
 
     def update_student_window():
+        """Opens 'Update Student' window"""
         if student_id.get() != '':
             update_window = Toplevel()
             update_window.title("Update Student")
@@ -1611,6 +1649,7 @@ def students_window():
             bg_image.place(x=0, y=0)
 
             def update_student():
+                """Updates data of student's details in the database"""
                 # Create a databases or connect to one
                 conn = sqlite3.connect("students_database.db")
 
@@ -1673,6 +1712,7 @@ def students_window():
                 conn.close()
 
             def clear_update_window():
+                """Clears all the entries of 'Update Student' window"""
                 entries = [student_name, student_ID, username, password, email, contact_num]
                 for entry in entries:
                     entry.delete(0, END)
@@ -1770,6 +1810,7 @@ def students_window():
             messagebox.showinfo("Invalid Student ID", "Please enter valid Student ID to continue!", parent=books_window)
 
     def remove_student():
+        """Remove data of student detail's from the database"""
         if student_id.get() != '':
             # create database
             conn = sqlite3.connect("students_database.db")
@@ -1922,6 +1963,7 @@ def students_window():
 
 
 def issue_window():
+    """Opens 'Issue Book' window"""
     issue_window = Toplevel()
     issue_window.geometry("1191x670+60+30")
     issue_window.resizable(0, 0)
@@ -1949,6 +1991,7 @@ def issue_window():
     # )''')
 
     def search():
+        """Takes book ID as input and searches book of respective ID"""
         global book_name_label
 
         conn = sqlite3.connect("books_database.db")
@@ -1975,6 +2018,7 @@ def issue_window():
         conn.close()
 
     def issue_book():
+        """Adds data of issued book into the database"""
         if book_id.get() != '' and quantity.get() != '' and issue_to.get() != '':
 
             conn = sqlite3.connect("issued_books_database.db")
@@ -2152,7 +2196,9 @@ def issue_window():
     mainloop()
 
 
+# Function that opens return book window
 def return_window():
+    """Opens 'Return Books' window"""
     return_window = Toplevel()
     return_window.geometry("1191x670+60+30")
     return_window.resizable(0, 0)
@@ -2167,6 +2213,7 @@ def return_window():
     return_bg_image.place(x=0, y=0)
 
     def search():
+        """Takes Issue Number as input and searches issue of respective issue number"""
         conn = sqlite3.connect("issued_books_database.db")
         c = conn.cursor()
 
@@ -2224,6 +2271,7 @@ def return_window():
         conn.close()
 
     def return_book():
+        """Remove data of issued books from the database"""
         if issue_num.get() != '':
             # create database
             conn = sqlite3.connect("issued_books_database.db")
@@ -2376,7 +2424,9 @@ def return_window():
 
     mainloop()
 
+
 def available_books():
+    """Opens 'Available Books' window of student window"""
     available_books_window = Toplevel()
     available_books_window.geometry("1191x670+60+30")
     available_books_window.resizable(0, 0)
@@ -2391,6 +2441,7 @@ def available_books():
     books_bg_image.place(x=0, y=0)
 
     def search():
+        """Takes book ID as input and searches book of respective ID"""
         for widgets in myFrame.winfo_children():
             widgets.destroy()
 
@@ -2510,6 +2561,7 @@ def available_books():
 
 
 def my_books():
+    """Opens 'My Books' window of student window"""
     my_books_window = Toplevel()
     my_books_window.geometry("1191x670+60+30")
     my_books_window.resizable(0, 0)
@@ -2634,14 +2686,12 @@ def my_books():
     issue_num.focus()
 
     # Buttons
-    search_issue_button = Button(my_books_window, text="Search", border=0, bg="#364954", fg="white",
-                                activebackground="#364954",
-                                activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=search)
+    search_issue_button = Button(my_books_window, text="Search", border=0, bg="#364954", fg="white", activebackground="#364954",
+                                 activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=search)
     search_issue_button.place(x=390, y=87)
 
-    exit_button = Button(my_books_window, text="Exit", border=0, bg="#364954", fg="white",
-                           activebackground="#364954",
-                           activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=exit)
+    exit_button = Button(my_books_window, text="Exit", border=0, bg="#364954", fg="white", activebackground="#364954",
+                         activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=exit)
     exit_button.place(x=240, y=503)
 
     # Create Frame with scrollbar
@@ -2663,16 +2713,11 @@ def my_books():
 
     c = conn.cursor()
 
-    Label(myFrame, text="Issue No.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=8).grid(row=0,
-                                                                                                             column=0)
-    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=20).grid(row=0,
-                                                                                                              column=1)
-    Label(myFrame, text="Student ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=9).grid(row=0,
-                                                                                                              column=2)
-    Label(myFrame, text="Issue Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0,
-                                                                                                               column=3)
-    Label(myFrame, text="Return Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0,
-                                                                                                                column=4)
+    Label(myFrame, text="Issue No.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=8).grid(row=0, column=0)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=20).grid(row=0, column=1)
+    Label(myFrame, text="Student ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=9).grid(row=0, column=2)
+    Label(myFrame, text="Issue Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0, column=3)
+    Label(myFrame, text="Return Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0, column=4)
     Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=4).grid(row=0, column=5)
 
     # query of the database
@@ -2685,18 +2730,12 @@ def my_books():
     num = 1
     for record in records:
         if record[2] in std_ID:
-            Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=9).grid(row=roww,
-                                                                                                           column=0)
-            Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=23).grid(
-                row=roww, column=1)
-            Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=10).grid(
-                row=roww, column=2)
-            Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(
-                row=roww, column=3)
-            Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(
-                row=roww, column=4)
-            Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(
-                row=roww, column=5)
+            Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=9).grid(row=roww, column=0)
+            Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=23).grid(row=roww, column=1)
+            Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=10).grid(row=roww, column=2)
+            Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(row=roww, column=3)
+            Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(row=roww, column=4)
+            Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(row=roww, column=5)
 
             roww += 1
             num += 1
@@ -2704,7 +2743,7 @@ def my_books():
     conn.commit()
     conn.close()
 
-
     mainloop()
+
 
 login_window()
