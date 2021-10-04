@@ -1049,7 +1049,7 @@ def librarians_window():
         """Opens 'Update Librarian' window"""
         if librarians_id.get() != '':
             update_window = Toplevel()
-            update_window.title("Update Book")
+            update_window.title("Update Librarian")
             update_window.geometry("1191x670+60+30")
             update_window.resizable(0, 0)
             update_window.iconbitmap("images/icon.ico")
