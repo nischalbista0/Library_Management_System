@@ -7,8 +7,6 @@ from tkinter import ttk
 from tkcalendar import *
 from datetime import date
 
-admin_credentials = {'username': 'admin', 'password': 'admin'}
-
 
 def login_window():
     global username
@@ -19,7 +17,7 @@ def login_window():
     root.geometry("1191x670+60+30")
     root.resizable(0, 0)
     root.title("Library Management System")
-    root.iconbitmap("images/bookshelf.ico")
+    root.iconbitmap("images/icon.ico")
 
     # Read the Image
     image = Image.open("images/login_window.png")
@@ -58,7 +56,11 @@ def login_window():
 
 def open_dashboard():
     global window
+    global std_username
 
+    std_username = username.get()
+
+    # Connecting to students database to get students credentials
     conn = sqlite3.connect("students_database.db")
     c = conn.cursor()
 
@@ -73,6 +75,26 @@ def open_dashboard():
         student_username.append(student_record[2])
         student_password.append(student_record[3])
 
+    conn.commit()
+    conn.close()
+
+    # Connecting to librarians database to get librarians credentials
+    conn = sqlite3.connect("librarians_database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT *, oid FROM librarian_details")
+
+    librarian_records = c.fetchall()
+
+    librarian_username = []
+    librarian_password = []
+
+    for librarian_record in librarian_records:
+        librarian_username.append(librarian_record[2])
+        librarian_password.append(librarian_record[3])
+
+    conn.commit()
+    conn.close()
 
     if username.get() == '' or password.get() == '':
         messagebox.showinfo("Incomplete Information", "Please enter both username and password to continue!")
@@ -82,6 +104,7 @@ def open_dashboard():
         student_window = Toplevel(root)
         student_window.geometry("1191x670+60+30")
         student_window.resizable(0, 0)
+        student_window.iconbitmap("images/icon.ico")
         student_window.title("Student Dashboard")
 
         # Read the Image
@@ -106,164 +129,6 @@ def open_dashboard():
                 username.delete(0, END)
                 password.delete(0, END)
                 username.focus()
-
-        def available_books():
-            available_books_window = Toplevel(student_window)
-            available_books_window.geometry("1191x670+60+30")
-            available_books_window.resizable(0, 0)
-            available_books_window.title("Available Books")
-
-            # Background image of books window
-            img = Image.open("images/books_student_window.png")
-            resized_image = img.resize((1191, 670))
-            books_bg = ImageTk.PhotoImage(resized_image)
-            books_bg_image = Label(available_books_window, image=books_bg)
-            books_bg_image.place(x=0, y=0)
-
-            def search():
-                for widgets in myFrame.winfo_children():
-                    widgets.destroy()
-
-                conn = sqlite3.connect("books_database.db")
-                c = conn.cursor()
-
-                c.execute("SELECT *, oid FROM book_details")
-
-                records = c.fetchall()
-
-                for record in records:
-                    if str(category.get()).lower().strip() == str(record[1]).lower():
-                        Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 10, "bold")).grid(row=0,
-                                                                                                                  column=0)
-                        Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
-                              width=25).grid(row=0,
-                                             column=1)
-                        Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
-                              width=16).grid(row=0,
-                                             column=2)
-                        Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
-                              width=10).grid(row=0,
-                                             column=3)
-                        Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
-                              width=5).grid(
-                            row=0, column=4)
-                        Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
-                              width=5).grid(row=0,
-                                            column=5)
-
-                        roww = 1
-                        num = 1
-
-                        for record in records:
-                            if str(category.get()).lower().strip() == str(record[1]).lower():
-                                Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 9), width=4).grid(
-                                    row=roww,
-                                    column=0)
-                                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 9),
-                                      width=28).grid(
-                                    row=roww, column=1)
-                                Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 9),
-                                      width=18).grid(
-                                    row=roww, column=2)
-                                Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 9),
-                                      width=11).grid(
-                                    row=roww, column=3)
-                                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 9),
-                                      width=5).grid(
-                                    row=roww, column=4)
-                                Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 9),
-                                      width=6).grid(
-                                    row=roww, column=5)
-
-                                roww += 1
-                                num += 1
-
-                conn.commit()
-                conn.close()
-
-            # Button
-            search_button = Button(available_books_window, text="Search", border=0, bg="#364954", fg="white",
-                                   activebackground="#364954",
-                                   activeforeground="#84B1CB", font=("Poppins", 16, "bold"), cursor="hand2",
-                                   command=search)
-            search_button.place(x=245, y=217)
-
-            # Entry
-            category = Entry(available_books_window, bd=0, font=("MS Reference Sans Serif", 15), width=14, bg="#a7b3bb",
-                             fg="black")
-            category.place(x=258, y=140)
-            category.focus()
-
-            # Labels
-            Label(available_books_window, text="Search books by Category", bg="#a7b3bb", fg="#032D23",
-                  font=("MS Reference Sans Serif", 15, "bold")).place(x=130, y=100)
-            Label(available_books_window, text="Category :", bg="#a7b3bb",
-                  font=("MS Reference Sans Serif", 14, "bold")).place(x=120, y=140)
-
-            # Create Frame with scrollbar
-            cover = LabelFrame(available_books_window, height=800, width=1000, bd=0)
-            cover.place(x=459, y=85)
-
-            myCanvas = Canvas(cover, height=490, width=601, bg="white")
-            myCanvas.pack(side=LEFT, fill='y', expand='yes')
-
-            myFrame = Frame(myCanvas)
-            myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
-
-            scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
-            scrollbar.pack(side=RIGHT, fill='y')
-            myCanvas.config(yscrollcommand=scrollbar.set)
-            myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
-
-            Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 10, "bold")).grid(row=0, column=0)
-            Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=25).grid(
-                row=0,
-                column=1)
-            Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=16).grid(
-                row=0,
-                column=2)
-            Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=10).grid(
-                row=0,
-                column=3)
-            Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(row=0,
-                                                                                                                column=4)
-            Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(row=0,
-                                                                                                              column=5)
-
-            conn = sqlite3.connect("books_database.db")
-            c = conn.cursor()
-
-            c.execute("SELECT *, oid FROM book_details")
-
-            records = c.fetchall()
-
-            roww = 1
-            num = 1
-
-            for record in records:
-                Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 9), width=4).grid(row=roww,
-                                                                                                        column=0)
-                Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 9), width=28).grid(row=roww,
-                                                                                                               column=1)
-                Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 9), width=18).grid(row=roww,
-                                                                                                               column=2)
-                Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 9), width=11).grid(row=roww,
-                                                                                                               column=3)
-                Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 9), width=5).grid(row=roww,
-                                                                                                              column=4)
-                Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 9), width=6).grid(row=roww,
-                                                                                                              column=5)
-
-                roww += 1
-                num += 1
-
-            conn.commit()
-            conn.close()
-
-            mainloop()
-
-        def my_books():
-            pass
 
         # Label
         label1 = Label(student_window, text="Dashboard", bg="#a7b3bb", font=("Times New Roman", 50, "bold"),
@@ -291,10 +156,11 @@ def open_dashboard():
 
         mainloop()
 
-    elif username.get() == admin_credentials['username'] and password.get() == admin_credentials['password']:
+    elif username.get() in librarian_username and password.get() in librarian_password:
         window = Toplevel(root)
         window.geometry("1191x670+60+30")
         window.resizable(0, 0)
+        window.iconbitmap("images/icon.ico")
         window.title("Admin Dashboard")
 
         def logout():
@@ -367,8 +233,8 @@ def open_dashboard():
 
         mainloop()
 
-    conn.commit()
-    conn.close()
+    elif (username.get() not in student_username and password.get() not in student_password) or (username.get() in librarian_username and password.get() in librarian_password):
+        messagebox.showinfo("Invalid Information", "Please enter correct username and password to continue!", parent=root)
 
 
 def books_window():
@@ -376,6 +242,7 @@ def books_window():
     books_window.geometry("1191x670+60+30")
     books_window.resizable(0, 0)
     books_window.title("Books")
+    books_window.iconbitmap("images/icon.ico")
 
     # Background image of books window
     img = Image.open("images/management_window.png")
@@ -471,11 +338,15 @@ def books_window():
             conn.commit()
             conn.close()
 
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid Book ID to continue!", parent=books_window)
+
     def add_book_window():
         add = Toplevel()
         add.title("Add Book")
         add.geometry("1191x670+60+30")
         add.resizable(0, 0)
+        add.iconbitmap("images/icon.ico")
 
         # Read the Image
         image = Image.open("images/add_and_update.png")
@@ -537,6 +408,9 @@ def books_window():
                 conn.commit()
                 conn.close()
                 add.destroy()
+
+            else:
+                messagebox.showinfo("Incomplete Information", "Please fill all the entries to continue!", parent=add)
 
         def clear_add_window():
             entries = [book_name, category, author_name, language, publication, quantity]
@@ -602,6 +476,7 @@ def books_window():
             update_window.title("Update Book")
             update_window.geometry("1191x670+60+30")
             update_window.resizable(0, 0)
+            update.iconbitmap("images/icon.ico")
 
             # Read the Image
             image = Image.open("images/add_and_update.png")
@@ -757,6 +632,10 @@ def books_window():
 
             mainloop()
 
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid Book ID to continue!", parent=books_window)
+
+
     def remove_book():
         if book_id.get() != '':
             # create database
@@ -901,6 +780,7 @@ def librarians_window():
     librarians_window.geometry("1191x670+60+30")
     librarians_window.resizable(0, 0)
     librarians_window.title("Librarians")
+    librarians_window.iconbitmap("images/icon.ico")
 
     # Background image of books window
     img = Image.open("images/management_window.png")
@@ -1001,12 +881,15 @@ def librarians_window():
             conn.commit()
             conn.close()
 
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid Librarian ID to continue!", parent=librarians_window)
 
     def add_librarian_window():
         add_window = Toplevel()
         add_window.title("Add Librarian")
         add_window.geometry("1191x670+60+30")
         add_window.resizable(0, 0)
+        add_window.iconbitmap("images/icon.ico")
 
         # Read the Image
         image = Image.open("images/add_and_update.png")
@@ -1074,6 +957,9 @@ def librarians_window():
                 conn.close()
                 add_window.destroy()
 
+            else:
+                messagebox.showinfo("Incomplete Information", "Please fill all entries to continue!", parent=add_window)
+
         def clear_add_window():
             entries = [librarian_name, librarian_ID, username, password, email, contact_num]
             for entry in entries:
@@ -1138,6 +1024,7 @@ def librarians_window():
             update_window.title("Update Book")
             update_window.geometry("1191x670+60+30")
             update_window.resizable(0, 0)
+            update_window.iconbitmap("images/icon.ico")
 
             # Read the Image
             image = Image.open("images/add_and_update.png")
@@ -1302,6 +1189,9 @@ def librarians_window():
 
             mainloop()
 
+        else:
+            messagebox.showinfo("Invalid Book ID", "Please enter valid Librarian ID to continue!", parent=librarians_window)
+
     def remove_librarian():
         if librarians_id.get() != '':
             # create database
@@ -1456,6 +1346,7 @@ def students_window():
     students_window.geometry("1191x670+60+30")
     students_window.resizable(0, 0)
     students_window.title("Students")
+    students_window.iconbitmap("images/icon.ico")
 
     # Background image of books window
     img = Image.open("images/management_window.png")
@@ -1556,11 +1447,16 @@ def students_window():
             conn.commit()
             conn.close()
 
+        else:
+            messagebox.showinfo("Invalid Student ID", "Please enter valid Student ID to continue!", parent=students_window)
+
+
     def add_student_window():
         add_window = Toplevel()
         add_window.title("Add Student")
         add_window.geometry("1191x670+60+30")
         add_window.resizable(0, 0)
+        add_window.iconbitmap("images/icon.ico")
 
         # Read the Image
         image = Image.open("images/add_and_update.png")
@@ -1627,6 +1523,9 @@ def students_window():
                 conn.commit()
                 conn.close()
                 add_window.destroy()
+
+            else:
+                messagebox.showinfo("Incomplete Information", "Please fill all entries to continue!", parent=students_window)
 
         def clear_add_window():
             entries = [student_name, student_ID, username, password, email, contact_num]
@@ -1698,6 +1597,7 @@ def students_window():
             update_window.title("Update Student")
             update_window.geometry("1191x670+60+30")
             update_window.resizable(0, 0)
+            update_window.iconbitmap("images/icon.ico")
 
             # Read the Image
             image = Image.open("images/add_and_update.png")
@@ -1866,6 +1766,9 @@ def students_window():
 
             mainloop()
 
+        else:
+            messagebox.showinfo("Invalid Student ID", "Please enter valid Student ID to continue!", parent=books_window)
+
     def remove_student():
         if student_id.get() != '':
             # create database
@@ -2023,6 +1926,7 @@ def issue_window():
     issue_window.geometry("1191x670+60+30")
     issue_window.resizable(0, 0)
     issue_window.title("Issue Books")
+    issue_window.iconbitmap("images/icon.ico")
 
     # Background image of books window
     img = Image.open("images/issue_window.png")
@@ -2253,6 +2157,7 @@ def return_window():
     return_window.geometry("1191x670+60+30")
     return_window.resizable(0, 0)
     return_window.title("Return Books")
+    return_window.iconbitmap("images/icon.ico")
 
     # Background image of books window
     img = Image.open("images/return_window.png")
@@ -2471,5 +2376,335 @@ def return_window():
 
     mainloop()
 
+def available_books():
+    available_books_window = Toplevel()
+    available_books_window.geometry("1191x670+60+30")
+    available_books_window.resizable(0, 0)
+    available_books_window.title("Available Books")
+    available_books_window.iconbitmap("images/icon.ico")
+
+    # Background image of books window
+    img = Image.open("images/books_student_window.png")
+    resized_image = img.resize((1191, 670))
+    books_bg = ImageTk.PhotoImage(resized_image)
+    books_bg_image = Label(available_books_window, image=books_bg)
+    books_bg_image.place(x=0, y=0)
+
+    def search():
+        for widgets in myFrame.winfo_children():
+            widgets.destroy()
+
+        conn = sqlite3.connect("books_database.db")
+        c = conn.cursor()
+
+        c.execute("SELECT *, oid FROM book_details")
+
+        records = c.fetchall()
+
+        for record in records:
+            if str(category.get()).lower().strip() == str(record[1]).lower():
+                Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 10, "bold")).grid(row=0,
+                                                                                                          column=0)
+                Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
+                      width=25).grid(row=0,
+                                     column=1)
+                Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
+                      width=16).grid(row=0,
+                                     column=2)
+                Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 10, "bold"),
+                      width=10).grid(row=0,
+                                     column=3)
+                Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(
+                    row=0, column=4)
+                Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(row=0,
+                                                                                                                  column=5)
+
+                roww = 1
+                num = 1
+
+                for record in records:
+                    if str(category.get()).lower().strip() == str(record[1]).lower():
+                        Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 9), width=4).grid(row=roww,
+                                                                                                                column=0)
+                        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 9), width=28).grid(
+                            row=roww, column=1)
+                        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 9), width=18).grid(
+                            row=roww, column=2)
+                        Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 9), width=11).grid(
+                            row=roww, column=3)
+                        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 9), width=5).grid(
+                            row=roww, column=4)
+                        Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 9), width=6).grid(
+                            row=roww, column=5)
+
+                        roww += 1
+                        num += 1
+
+        conn.commit()
+        conn.close()
+
+    # Button
+    search_button = Button(available_books_window, text="Search", border=0, bg="#364954", fg="white", activebackground="#364954",
+                        activeforeground="#84B1CB", font=("Poppins", 16, "bold"), cursor="hand2", command=search)
+    search_button.place(x=245, y=217)
+
+    # Entry
+    category = Entry(available_books_window, bd=0, font=("MS Reference Sans Serif", 15), width=14, bg="#a7b3bb", fg="black")
+    category.place(x=258, y=140)
+    category.focus()
+
+    # Labels
+    Label(available_books_window, text="Search books by Category", bg="#a7b3bb", fg="#032D23", font=("MS Reference Sans Serif", 15, "bold")).place(x=130, y=100)
+    Label(available_books_window, text="Category :", bg="#a7b3bb", font=("MS Reference Sans Serif", 14, "bold")).place(x=120, y=140)
+
+    # Create Frame with scrollbar
+    cover = LabelFrame(available_books_window, height=800, width=1000, bd=0)
+    cover.place(x=459, y=85)
+
+    myCanvas = Canvas(cover, height=490, width=601, bg="white")
+    myCanvas.pack(side=LEFT, fill='y', expand='yes')
+
+    myFrame = Frame(myCanvas)
+    myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
+
+    scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
+    scrollbar.pack(side=RIGHT, fill='y')
+    myCanvas.config(yscrollcommand=scrollbar.set)
+    myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
+
+    Label(myFrame, text="S.N", bg="white", font=("MS Reference Sans Serif", 10, "bold")).grid(row=0, column=0)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=25).grid(row=0,
+                                                                                                              column=1)
+    Label(myFrame, text="Publication", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=16).grid(row=0,
+                                                                                                                column=2)
+    Label(myFrame, text="Category", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=10).grid(row=0,
+                                                                                                             column=3)
+    Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(row=0, column=4)
+    Label(myFrame, text="ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=5).grid(row=0, column=5)
+
+    conn = sqlite3.connect("books_database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT *, oid FROM book_details")
+
+    records = c.fetchall()
+
+    roww = 1
+    num = 1
+
+    for record in records:
+        Label(myFrame, text=num, bg="white", font=("MS Reference Sans Serif", 9), width=4).grid(row=roww, column=0)
+        Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 9), width=28).grid(row=roww, column=1)
+        Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 9), width=18).grid(row=roww, column=2)
+        Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 9), width=11).grid(row=roww, column=3)
+        Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 9), width=5).grid(row=roww, column=4)
+        Label(myFrame, text=record[6], bg="white", font=("MS Reference Sans Serif", 9), width=6).grid(row=roww, column=5)
+
+        roww += 1
+        num += 1
+
+    conn.commit()
+    conn.close()
+
+    mainloop()
+
+
+def my_books():
+    my_books_window = Toplevel()
+    my_books_window.geometry("1191x670+60+30")
+    my_books_window.resizable(0, 0)
+    my_books_window.title("Available Books")
+    my_books_window.iconbitmap("images/icon.ico")
+
+    # Background image of books window
+    img = Image.open("images/return_window.png")
+    resized_image = img.resize((1191, 670))
+    books_bg = ImageTk.PhotoImage(resized_image)
+    books_bg_image = Label(my_books_window, image=books_bg)
+    books_bg_image.place(x=0, y=0)
+
+    conn = sqlite3.connect("students_database.db")
+    c = conn.cursor()
+
+    c.execute("SELECT *, oid FROM student_details")
+
+    student_records = c.fetchall()
+
+    std_ID = []
+
+    for student_record in student_records:
+        if student_record[2] == std_username:
+            std_ID.append(student_record[1])
+
+    conn.commit()
+    conn.close()
+
+    def search():
+        conn = sqlite3.connect("issued_books_database.db")
+        c = conn.cursor()
+
+        c.execute("SELECT *, oid FROM issued_book_details")
+
+        records = c.fetchall()
+
+        for record in records:
+            if int(issue_num.get()) == int(record[0]):
+                book_name_label = Label(my_books_window, text=record[1], bg="#a7b3bb",
+                                        font=("MS Reference Sans Serif", 14))
+                book_name_label.place(x=220, y=145)
+
+                quantity_label = Label(my_books_window, text=record[5], bg="#a7b3bb",
+                                       font=("MS Reference Sans Serif", 14))
+                quantity_label.place(x=220, y=185)
+
+                issue_date_label = Label(my_books_window, text=record[3], bg="#a7b3bb",
+                                         font=("MS Reference Sans Serif", 14))
+                issue_date_label.place(x=220, y=220)
+
+                return_date_label = Label(my_books_window, text=record[4], bg="#a7b3bb",
+                                          font=("MS Reference Sans Serif", 14))
+                return_date_label.place(x=220, y=255)
+
+                current_date = str(date.today())
+                date1 = current_date.split("-")
+
+                return_date = record[4]
+                date2 = return_date.split("-")
+
+                c_date = datetime.datetime(int(date1[0]), int(date1[1]), int(date1[2]))
+                r_date = datetime.datetime(int(date2[0]), int(date2[1]), int(date2[2]))
+
+                delta = r_date - c_date
+
+                if c_date > r_date:
+                    Label(my_books_window, text="STATUS", bg="#a7b3bb",
+                          font=("MS Reference Sans Serif", 16, "bold")).place(x=215, y=380)
+
+                    Label(my_books_window,
+                          text="The date for return of this book has already passed.\n So, the fine will be Rs. 100",
+                          bg="#a7b3bb", font=("MS Reference Sans Serif", 12, "bold")).place(x=30, y=420)
+
+                elif c_date == r_date:
+                    Label(my_books_window, text="STATUS", bg="#a7b3bb",
+                          font=("MS Reference Sans Serif", 16, "bold")).place(x=215, y=380)
+
+                    Label(my_books_window,
+                          text="The date for return of this book is today.",
+                          bg="#a7b3bb", font=("MS Reference Sans Serif", 12, "bold")).place(x=70, y=420)
+
+                else:
+                    Label(my_books_window, text="STATUS", bg="#a7b3bb",
+                          font=("MS Reference Sans Serif", 16, "bold")).place(x=215, y=380)
+
+                    Label(my_books_window, text=f"You have {delta.days} day(s) remaining to return this book.", bg="#a7b3bb",
+                          font=("MS Reference Sans Serif", 12, "bold")).place(x=45, y=420)
+
+        conn.commit()
+        conn.close()
+
+    def exit():
+        my_books_window.destroy()
+
+    # Creating and placing labels
+
+    label1 = Label(my_books_window, text="Book Details", bg="#a7b3bb", font=("Times New Roman", 20, "bold"))
+    label1.place(x=195, y=45)
+
+    label2 = Label(my_books_window, text="My Issued Books", bg="#a7b3bb", font=("Times New Roman", 20, "bold"))
+    label2.place(x=790, y=45)
+
+    label3 = Label(my_books_window, text="Issue No. :", bg="#a7b3bb", font=("MS Reference Sans Serif", 17, "bold"))
+    label3.place(x=30, y=90)
+
+    label4 = Label(my_books_window, text="Book Name :", bg="#a7b3bb", font=("MS Reference Sans Serif", 13, "bold"))
+    label4.place(x=90, y=145)
+
+    label6 = Label(my_books_window, text="Quantity :", bg="#a7b3bb", font=("MS Reference Sans Serif", 13, "bold"))
+    label6.place(x=115, y=185)
+
+    label7 = Label(my_books_window, text="Issue Date :", bg="#a7b3bb", font=("MS Reference Sans Serif", 13, "bold"))
+    label7.place(x=95, y=220)
+
+    label8 = Label(my_books_window, text="Date for Return :", bg="#a7b3bb", font=("MS Reference Sans Serif", 13, "bold"))
+    label8.place(x=50, y=255)
+
+    # Creating and placing entries
+    issue_num = Entry(my_books_window, bd=0, font=("MS Reference Sans Serif", 15), width=12, bg="#a7b3bb", fg="black")
+    issue_num.place(x=183, y=93)
+    issue_num.focus()
+
+    # Buttons
+    search_issue_button = Button(my_books_window, text="Search", border=0, bg="#364954", fg="white",
+                                activebackground="#364954",
+                                activeforeground="#84B1CB", font=("Poppins", 15, "bold"), cursor="hand2", command=search)
+    search_issue_button.place(x=390, y=87)
+
+    exit_button = Button(my_books_window, text="Exit", border=0, bg="#364954", fg="white",
+                           activebackground="#364954",
+                           activeforeground="#84B1CB", font=("Poppins", 17, "bold"), cursor="hand2", command=exit)
+    exit_button.place(x=240, y=503)
+
+    # Create Frame with scrollbar
+    cover = LabelFrame(my_books_window, height=800, width=1000, bd=0)
+    cover.place(x=524, y=86)
+
+    myCanvas = Canvas(cover, height=530, width=610, bg="white")
+    myCanvas.pack(side=LEFT, fill='y', expand='yes')
+
+    myFrame = Frame(myCanvas)
+    myCanvas.create_window((0, 0), window=myFrame, anchor='nw')
+
+    scrollbar = ttk.Scrollbar(cover, orient='vertical', command=myCanvas.yview)
+    scrollbar.pack(side=RIGHT, fill='y')
+    myCanvas.config(yscrollcommand=scrollbar.set)
+    myCanvas.bind('<Configure>', lambda e: myCanvas.configure(scrollregion=myCanvas.bbox('all')))
+
+    conn = sqlite3.connect('issued_books_database.db')
+
+    c = conn.cursor()
+
+    Label(myFrame, text="Issue No.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=8).grid(row=0,
+                                                                                                             column=0)
+    Label(myFrame, text="Book Name", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=20).grid(row=0,
+                                                                                                              column=1)
+    Label(myFrame, text="Student ID", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=9).grid(row=0,
+                                                                                                              column=2)
+    Label(myFrame, text="Issue Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0,
+                                                                                                               column=3)
+    Label(myFrame, text="Return Date", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=11).grid(row=0,
+                                                                                                                column=4)
+    Label(myFrame, text="Qty.", bg="white", font=("MS Reference Sans Serif", 10, "bold"), width=4).grid(row=0, column=5)
+
+    # query of the database
+    c.execute("SELECT *, oid FROM issued_book_details")
+
+    # print(records)
+    records = c.fetchall()
+
+    roww = 1
+    num = 1
+    for record in records:
+        if record[2] in std_ID:
+            Label(myFrame, text=record[0], bg="white", font=("MS Reference Sans Serif", 10), width=9).grid(row=roww,
+                                                                                                           column=0)
+            Label(myFrame, text=record[1], bg="white", font=("MS Reference Sans Serif", 10), width=23).grid(
+                row=roww, column=1)
+            Label(myFrame, text=record[2], bg="white", font=("MS Reference Sans Serif", 10), width=10).grid(
+                row=roww, column=2)
+            Label(myFrame, text=record[3], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(
+                row=roww, column=3)
+            Label(myFrame, text=record[4], bg="white", font=("MS Reference Sans Serif", 10), width=13).grid(
+                row=roww, column=4)
+            Label(myFrame, text=record[5], bg="white", font=("MS Reference Sans Serif", 10), width=5).grid(
+                row=roww, column=5)
+
+            roww += 1
+            num += 1
+
+    conn.commit()
+    conn.close()
+
+
+    mainloop()
 
 login_window()
